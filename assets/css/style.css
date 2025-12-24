@@ -1,0 +1,331 @@
+:root {
+    --bg-color: #000000;
+    --text-color: #ffffff;
+    --panel-bg: #1a1a1a;
+    --panel-text: #e0e0e0;
+    --accent-color: #3b82f6;
+    /* Blue-500 */
+    --accent-hover: #2563eb;
+    /* Blue-600 */
+    --border-color: #333333;
+    --font-ui: 'Inter', 'Noto Sans TC', sans-serif;
+    --font-script: 'Noto Sans TC', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body,
+html {
+    height: 100%;
+    font-family: var(--font-ui);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    /* 防止 Body 捲動 */
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* --- Teleprompter Display Area --- */
+.teleprompter-display {
+    flex: 1;
+    background-color: #000;
+    color: #fff;
+    overflow: hidden;
+    /* 隱藏原生滾動條，由 JS 控制 transform 或 scrollTop */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    /* 確保反轉容器時以此為基準 */
+    perspective: 1000px;
+}
+
+.teleprompter-display.flipped {
+    transform: scaleY(-1);
+}
+
+.scroll-content {
+    width: 90%;
+    max-width: 1200px;
+    padding: 50vh 0;
+    /* 便於從中間開始或結束 */
+    font-family: var(--font-script);
+    line-height: 1.5;
+    font-weight: 700;
+    text-align: center;
+    /* 讓內容可以用 JS 滾動 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* transition: transform 0.1s linear;  若由 JS 控制 top/transform 可用 */
+}
+
+.text-placeholder {
+    color: #555;
+    font-style: italic;
+}
+
+.flip-indicator {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+    transform: scaleY(-1);
+    /* 讓提示字在反轉模式下是正的，如果父容器反轉了 */
+}
+
+.teleprompter-display.flipped .flip-indicator {
+    display: block;
+}
+
+/* --- Control Panel --- */
+.control-panel {
+    background-color: var(--panel-bg);
+    color: var(--panel-text);
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    height: 35vh;
+    /* 佔據底部 35% */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-header h1 {
+    font-size: 1.2rem;
+    color: var(--accent-color);
+}
+
+.panel-content {
+    display: flex;
+    gap: 2rem;
+    height: 100%;
+}
+
+/* Column 1: Input Text */
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group:first-child {
+    flex: 2;
+    /* 文字框佔較大比例 */
+}
+
+textarea {
+    flex: 1;
+    background-color: #2a2a2a;
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    resize: none;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+}
+
+textarea:focus {
+    outline: 2px solid var(--accent-color);
+    border-color: transparent;
+}
+
+/* Column 2: Settings */
+.settings-grid {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+}
+
+input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* Column 3: Actions */
+.action-buttons {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.2s;
+}
+
+.btn.primary {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn.primary:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn.secondary {
+    background-color: #4a4a4a;
+    color: white;
+}
+
+.btn.secondary:hover {
+    background-color: #5a5a5a;
+}
+
+.btn.toggle {
+    background-color: #4a4a4a;
+    color: white;
+}
+
+.btn.toggle.active {
+    background-color: #10b981;
+    /* Green-500 */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .panel-content {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .control-panel {
+        height: auto;
+        max-height: 50vh;
+    }
+}
+/* --- Immersive Mode & Guide Line --- */
+
+/* Guide Line */
+.guide-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Immersive State (.is-playing on app-container) */
+.app-container.is-playing .control-panel {
+    display: none;
+}
+
+.app-container.is-playing .teleprompter-display {
+    height: 100vh;
+}
+
+/* --- Scroll Wrapper Fix --- */
+.scroll-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Scroll happens here now */
+}
+
+/* Adjust scroll content to flow naturally inside wrapper */
+.scroll-content {
+    position: relative;
+    /* Reset previous absolute positioning if needed, but 'top:0' etc was ignored if relative */
+    width: 90%;
+    margin: 0 auto;
+    /* Keep existing padding */
+}
+
+/* --- UI Refinements --- */
+
+/* Correct Flip Indicator Background */
+.flip-indicator {
+    background: rgba(50, 50, 50, 0.8) !important; /* Dark Gray */
+}
+
+/* Exit Button in Immersive Mode */
+.btn-exit {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 100;
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-exit:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Show Exit button when playing */
+.app-container.is-playing .btn-exit {
+    display: flex;
+}
+
+/* Counter-flip the exit button so it looks normal even if container is flipped */
+.teleprompter-display.flipped .btn-exit {
+    transform: scaleY(-1);
+    top: auto;
+    bottom: 20px; /* If flipped vertically, top becomes bottom visually, but logic remains absolute top? */
+    /* Wait, if parent is scaleY(-1), top becomes visual bottom. 
+       Let's stick to simple counter flip first. */
+}
+
+/* Fullscreen Button Override */
+.btn-fullscreen {
+    right: 70px; /* Position to the left of Exit button */
+    font-size: 1rem;
+}

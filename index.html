@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 提詞器 (Teleprompter)</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Noto+Sans+TC:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- 提詞顯示區 (Prompter Display) -->
+        <main class="teleprompter-display" id="displayArea">
+            <div class="scroll-wrapper" id="scrollWrapper">
+                <div class="scroll-content" id="scrollContent">
+                    <!-- 文字內容將由 JS 動態插入或同步 -->
+                    <div class="text-placeholder">請在下方輸入文字...</div>
+                </div>
+            </div>
+            <!-- 鏡像反轉提示 (可選) -->
+            <div class="flip-indicator" id="flipIndicator">FLIPPED</div>
+
+            <!-- 視線引導線 -->
+            <div class="guide-line"></div>
+
+            <!-- 全螢幕按鈕 -->
+            <button id="btnFullscreen" class="btn-exit btn-fullscreen" title="全螢幕切換">⛶</button>
+            <!-- 退出播放按鈕 -->
+            <button id="btnExit" class="btn-exit" title="退出播放">✕</button>
+        </main>
+
+        <!-- 控制面板 (Control Panel) -->
+        <aside class="control-panel">
+            <div class="panel-header">
+                <h1>Web Teleprompter</h1>
+            </div>
+
+            <div class="panel-content">
+                <!-- 文字輸入區 -->
+                <div class="control-group">
+                    <label for="scriptInput">提詞稿內容</label>
+                    <textarea id="scriptInput" placeholder="在此輸入或貼上演講稿..."></textarea>
+                </div>
+
+                <!-- 設定控制 -->
+                <div class="settings-grid">
+                    <div class="control-group">
+                        <label for="fontSizeSlider">字體大小 <span id="fontSizeDisplay">48px</span></label>
+                        <input type="range" id="fontSizeSlider" min="20" max="150" value="48" step="2">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="speedSlider">滾動速度 <span id="speedDisplay">0</span></label>
+                        <input type="range" id="speedSlider" min="0" max="100" value="0" step="1">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="marginSlider">左右邊距 <span id="marginDisplay">5%</span></label>
+                        <input type="range" id="marginSlider" min="0" max="40" value="5" step="1">
+                    </div>
+                </div>
+
+                <!-- 操作按鈕 -->
+                <div class="action-buttons">
+                    <button id="btnPlayPause" class="btn primary">
+                        <span class="icon">▶</span> 播放
+                    </button>
+                    <button id="btnReset" class="btn secondary">
+                        <span class="icon">↺</span> 重置
+                    </button>
+                    <button id="btnFlip" class="btn toggle">
+                        <span class="icon">⇅</span> 上下反轉
+                    </button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>
