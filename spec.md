@@ -18,7 +18,12 @@ State = {
   fontSize: number,        // 字體大小 (px/rem)
   speed: number,           // 滾動速度 (1-10, 或 pixels/frame)
   isFlipped: boolean,      // 是否上下反轉
-  scrollPosition: number   // 當前滾動位置 (float)
+  scrollPosition: number,  // 當前滾動位置 (float)
+  // Interaction State
+  isImmersive: boolean,    // 是否全螢幕播放 (控制面板隱藏)
+  isDragging: boolean,     // 是否正在手動拖曳
+  touchHasMoved: boolean,  // 觸控是否發生移動 (區分點擊與拖曳)
+  lastTouchY: number       // 上一次觸控點的 Y 座標
 }
 ```
 
@@ -57,7 +62,12 @@ State = {
 
 ### 4.2 事件處理 (Event Handling)
 - **Input Change**: 即時更新 `State.text` 並渲染至顯示區。
+- **Paste Button**: 讀取剪貼簿權限與內容，並插入輸入框。
 - **Window Resize**: 重新計算容器高度，確保滾動邊界正確。
+- **Touch Events (Mobile/Tablet)**:
+  - `touchstart`: 記錄起始 Y 座標，標記 `isDragging = true`。
+  - `touchmove`: 計算 `deltaY` 並呼叫 `adjustScroll()` 更新位置，同時暫停自動播放。
+  - `touchend`: 標記 `isDragging = false`。若 `touchHasMoved` 為 false，視為點擊，觸發 `togglePause()`。
 - **Keyboard Shortcuts**:
   - `Space`: 切換 播放/暫停。
   - `Up/Down Arrow`: 微調滾動位置。
@@ -66,9 +76,10 @@ State = {
 ### 4.3 沉浸式播放模式 (Immersive Playback Mode)
 - **觸發條件**: 當 `State.isPlaying` 變為 `true` 時啟動；變為 `false` 時退出。
 - **UI 行為**:
-  - 在 Root 容器 (`.app-container` 或 `body`) 新增 `.is-playing` class。
-  - CSS 規則 `.is-playing .control-panel` 設為 `display: none` 或移出視窗。
-  - CSS 規則 `.is-playing .teleprompter-display` 設為 `height: 100vh`。
+- **UI 行為**:
+  - 在 Root 容器 (`.app-container`) 新增 `.is-playing` class。
+  - CSS 規則 `.is-playing .control-panel` 設為 `display: none`。
+  - CSS 規則 `.is-playing .teleprompter-display` 設為 `display: flex` 且佔滿全螢幕。
 - **視線引導線 (Eye-line Guide)**:
   - 在 `.teleprompter-display` 中新增一個絕對定位的 `div.guide-line`。
   - 樣式: `top: 50%`, `width: 100%`, `border-top: 1px solid rgba(255,255,255,0.3)`.

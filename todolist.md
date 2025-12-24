@@ -60,8 +60,18 @@
     - [x] JS `State.margin` 邏輯與 `updateUI` 連動 (控制 `.scroll-content` 寬度)。
 
     - [x] JS `State.margin` 邏輯與 `updateUI` 連動 (控制 `.scroll-content` 寬度)。
+    - [x] **全頁設定模式 (Full Page Settings)**
+        - [x] 修改 CSS 使 `.control-panel` 預設佔滿全螢幕。
+        - [x] 播放時隱藏 `.control-panel` 並顯示 `.teleprompter-display`。
+    - [x] **貼上按鈕 (Paste Button)**
+        - [x] 新增貼上按鈕於輸入框旁。
+        - [x] JS 實作剪貼簿讀取功能。
 
-## Phase 3.7: Native Fullscreen Support
+## Phase 3.7: Touch Interaction & Native Fullscreen Support
+- [x] **觸控滾動 (Touch Scroll)**
+    - [x] 監聽 `touchstart`, `touchmove`, `touchend`。
+    - [x] 實作手動拖曳滾動邏輯。
+    - [x] 解決與自動播放的衝突 (手勢時暫停)。
 - [x] **全螢幕按鈕**
     - [x] HTML 新增 `#btnFullscreen`。
     - [x] JS 實作 `toggleFullscreen` 邏輯。
