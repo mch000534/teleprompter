@@ -146,6 +146,8 @@ textarea {
     resize: none;
     font-family: var(--font-ui);
     font-size: 1rem;
+    min-height: 150px;
+    /* Ensure 夠高的輸入區域 */
 }
 
 select {
@@ -248,17 +250,95 @@ input[type="range"] {
     /* Green-500 */
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Responsive Layout Updates */
+@media (min-width: 768px) {
+    .panel-content {
+        flex-direction: row;
+        /* align-items: stretch; is default, allowing columns to fill height */
+    }
+
+    .control-panel {
+        height: 35vh;
+        max-height: 400px;
+        /* Limit height on large screens */
+    }
+
+    /* Make the settings grid 2 columns on wider screens (iPad landscape) */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem 1.5rem;
+        /* row-gap column-gap */
+        align-content: start;
+    }
+
+    /* Ensure the font select spans full width if needed, or fits in grid */
+    .control-group:has(#fontSelect) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 767px) {
     .panel-content {
         flex-direction: column;
         overflow-y: auto;
+        padding-bottom: 2rem;
+        /* Add some bottom padding for scrolling */
     }
 
     .control-panel {
         height: auto;
         max-height: 50vh;
     }
+
+    .settings-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Touch Optimizations */
+input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+    height: 24px;
+    /* Taller hit area */
+    margin: 5px 0;
+}
+
+/* Custom Range Slider Thumb for better touch target */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--accent-color);
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+select {
+    height: 44px;
+    /* Standard touch target height */
+}
+
+.btn {
+    min-height: 44px;
+    /* Standard touch target height */
 }
 
 /* --- Immersive Mode & Guide Line --- */
