@@ -7,11 +7,13 @@ const State = {
     isPlaying: false,
     text: '',
     fontSize: 48,
-    speed: 0,
+    speed: 3,
     margin: 5,
-    isFlipped: false,
+    isFlipped: true,
     scrollPosition: 0,
-    lastFrameTime: 0
+    lastFrameTime: 0,
+    guideHeight: 50,
+    fontFamily: "'Noto Sans TC', sans-serif"
 };
 
 // --- 2. DOM Elements ---
@@ -30,7 +32,11 @@ const Elements = {
     btnFlip: document.getElementById('btnFlip'),
     btnExit: document.getElementById('btnExit'),
     btnFullscreen: document.getElementById('btnFullscreen'),
-    flipIndicator: document.getElementById('flipIndicator')
+    flipIndicator: document.getElementById('flipIndicator'),
+    guideHeightSlider: document.getElementById('guideHeightSlider'),
+    guideHeightDisplay: document.getElementById('guideHeightDisplay'),
+    guideLine: document.getElementById('guideLine'),
+    fontSelect: document.getElementById('fontSelect')
 };
 
 // --- 3. UI Controller ---
@@ -48,6 +54,9 @@ function updateUI() {
     // Sync Font Size
     Elements.scrollContent.style.fontSize = `${State.fontSize}px`;
     Elements.fontSizeDisplay.textContent = `${State.fontSize}px`;
+
+    // Sync Font Family
+    Elements.scrollContent.style.fontFamily = State.fontFamily;
 
     // Sync Speed Display
     Elements.speedDisplay.textContent = State.speed;
@@ -87,6 +96,14 @@ function updateUI() {
         Elements.displayArea.classList.remove('flipped');
         Elements.btnFlip.classList.remove('active');
     }
+
+    // Sync Guide Height
+    if (Elements.guideLine) {
+        Elements.guideLine.style.top = `${State.guideHeight}%`;
+    }
+    if (Elements.guideHeightDisplay) {
+        Elements.guideHeightDisplay.textContent = `${State.guideHeight}%`;
+    }
 }
 
 // --- 4. Event Listeners ---
@@ -114,6 +131,22 @@ function initEvents() {
     if (Elements.marginSlider) {
         Elements.marginSlider.addEventListener('input', (e) => {
             State.margin = parseInt(e.target.value, 10);
+            updateUI();
+        });
+    }
+
+    // Guide Height
+    if (Elements.guideHeightSlider) {
+        Elements.guideHeightSlider.addEventListener('input', (e) => {
+            State.guideHeight = parseInt(e.target.value, 10);
+            updateUI();
+        });
+    }
+
+    // Font Family
+    if (Elements.fontSelect) {
+        Elements.fontSelect.addEventListener('change', (e) => {
+            State.fontFamily = e.target.value;
             updateUI();
         });
     }
@@ -179,6 +212,11 @@ function togglePlay() {
     State.isPlaying = !State.isPlaying;
 
     if (State.isPlaying) {
+        // Auto-enter fullscreen on play if not already
+        if (!document.fullscreenElement) {
+            toggleFullscreen();
+        }
+
         State.lastFrameTime = performance.now();
         requestAnimationFrame(renderLoop);
     }
