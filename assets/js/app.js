@@ -36,7 +36,8 @@ const Elements = {
     guideHeightSlider: document.getElementById('guideHeightSlider'),
     guideHeightDisplay: document.getElementById('guideHeightDisplay'),
     guideLine: document.getElementById('guideLine'),
-    fontSelect: document.getElementById('fontSelect')
+    fontSelect: document.getElementById('fontSelect'),
+    btnPaste: document.getElementById('btnPaste')
 };
 
 // --- 3. UI Controller ---
@@ -114,6 +115,41 @@ function initEvents() {
         State.text = e.target.value;
         updateUI();
     });
+
+    // Paste Button
+    if (Elements.btnPaste) {
+        Elements.btnPaste.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    // Option 1: Append
+                    // Elements.scriptInput.value += text;
+                    // Option 2: Replace (User might prefer just setting it) -> Let's append if not empty?
+                    // Let's just set proper value. If specific cursor position needed, that's complex.
+                    // Simple approach: Input value += text or just focus.
+                    // Let's Insert at cursor position if possible, or append.
+
+                    const el = Elements.scriptInput;
+                    const start = el.selectionStart;
+                    const end = el.selectionEnd;
+                    const val = el.value;
+
+                    const before = val.substring(0, start);
+                    const after = val.substring(end);
+
+                    el.value = before + text + after;
+                    el.selectionStart = el.selectionEnd = start + text.length;
+                    el.focus();
+
+                    // Trigger input event manually to update state
+                    el.dispatchEvent(new Event('input'));
+                }
+            } catch (err) {
+                console.error('Failed to read clipboard contents: ', err);
+                alert('無法讀取剪貼簿內容，請確認瀏覽器權限。');
+            }
+        });
+    }
 
     // Font Size
     Elements.fontSizeSlider.addEventListener('input', (e) => {
